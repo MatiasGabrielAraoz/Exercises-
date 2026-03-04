@@ -1,0 +1,3 @@
+/home/matias/Projects/Trajectory/build/CMakeFiles/Trajectory.dir
+/home/matias/Projects/Trajectory/build/CMakeFiles/edit_cache.dir
+/home/matias/Projects/Trajectory/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+/usr/sbin/c++ -Wl,--dependency-file=CMakeFiles/Trajectory.dir/link.d CMakeFiles/Trajectory.dir/main.cpp.o -o Trajectory  /usr/lib/libraylib.so

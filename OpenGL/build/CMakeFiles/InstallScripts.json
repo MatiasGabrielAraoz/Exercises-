@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/matias/CLionProjects/OpenGL/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

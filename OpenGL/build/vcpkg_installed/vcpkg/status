@@ -1,0 +1,77 @@
+Package: vcpkg-cmake-config
+Version: 2024-05-23
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 1cd6735b0de931b2b18ca41fac5898defc19f77d6d2f6bb9668c63edf18b1d82
+Status: install ok installed
+
+Package: vcpkg-cmake
+Version: 2024-04-23
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 26120dd78c7d911d9e741d3543dbc11773ae7c7f262ae80d94522489c583122e
+Status: install ok installed
+
+Package: egl-registry
+Version: 2025-05-27
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 038ff4e725532e07d968711786de8e2d3e5835e05390eb04e431178f590d7467
+Description: EGL API and Extension Registry
+Status: install ok installed
+
+Package: opengl-registry
+Version: 2026-01-26
+Depends: egl-registry
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 13fb56689a3d0077f25e65b87679d797eaf27a3d6f6772d00c973232758b192d
+Description: OpenGL, OpenGL ES, and OpenGL ES-SC API and Extension Registry
+Status: install ok installed
+
+Package: glad
+Version: 0.1.36
+Depends: egl-registry, opengl-registry, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 38672fc3e5514c30fd35f4ce6d0329a3f12874a2eb2d2f3eafe282dee5f8c3cf
+Description: Multi-Language Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator based on the official specs.
+Default-Features: loader
+Status: install ok installed
+
+Package: glad
+Feature: loader
+Architecture: x64-linux
+Multi-Arch: same
+Description: Generate loader logic.
+Status: install ok installed
+
+Package: glfw3
+Version: 3.4
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: da3e9c19112eb05f8221d92bd1c8f0b4d3f9a57a77fa59579c7703bd282b3b81
+Description: GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development. It provides a simple, platform-independent API for creating windows, contexts and surfaces, reading input, handling events, etc.
+Status: install ok installed
+
+Package: glm
+Version: 1.0.3
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: e8aa47168e79ece979ddf948e392144f239568c05a12835f8f591ec3d2dff34e
+Description: OpenGL Mathematics (GLM)
+Status: install ok installed
+
+Package: opengl
+Version: 2022-12-04
+Port-Version: 3
+Depends: opengl-registry
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 08dc4d8105482d78a065a2929a08d21715150f15b94cd4655eccab25aae93191
+Description: Open Graphics Library (OpenGL)[3][4][5] is a cross-language, cross-platform application programming interface (API) for rendering 2D and 3D vector graphics.
+Status: install ok installed
+

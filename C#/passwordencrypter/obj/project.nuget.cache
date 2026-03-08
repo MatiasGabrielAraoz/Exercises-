@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "6Pse+ZUwhKY=",
+  "success": true,
+  "projectFilePath": "/home/matias/Projects/C#/passwordencrypter/passwordencrypter.csproj",
+  "expectedPackageFiles": [
+    "/home/matias/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.3/microsoft.aspnetcore.app.ref.10.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,2 +1,3 @@
 ./AsmMips/.config
 ./AsmMips/.build
+**/target/

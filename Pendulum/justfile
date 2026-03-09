@@ -1,0 +1,24 @@
+BuildFileName := "main"
+
+VCPKG_ROOT := `echo $VCPKG_ROOT`
+VCPKG_TRIPLET := `echo $VCPKG_TRIPLET`
+
+export PKG_CONFIG_PATH := VCPKG_ROOT + "/installed/" + VCPKG_TRIPLET + "/lib/pkgconfig"
+
+PKG_FLAGS := `pkg-config --cflags --libs raylib`
+
+build File="main.cpp" BuildFileName="main":
+    @g++ {{File}} -o {{BuildFileName}} {{PKG_FLAGS}}
+    @echo "Proyect builded succesfully"
+
+
+push commit:
+    git commit -m "{{commit}}"
+    git push origin main
+
+run: build
+    ./{{BuildFileName}}
+    @echo "Running"
+
+clean: 
+  rm -rf ./{{BuildFileName}}

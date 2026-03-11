@@ -1,3 +1,4 @@
 ./AsmMips/.config
 ./AsmMips/.build
 **/target/
+./Chip-8Emulator/

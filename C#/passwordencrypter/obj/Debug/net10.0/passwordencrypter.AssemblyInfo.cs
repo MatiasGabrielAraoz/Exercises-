@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("passwordencrypter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+02211c1c02d009da74cc28ba35aade42b511007c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c60a5f624c1fffd634f782f1613465084e72432")]
 [assembly: System.Reflection.AssemblyProductAttribute("passwordencrypter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("passwordencrypter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

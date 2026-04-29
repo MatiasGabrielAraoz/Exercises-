@@ -2,3 +2,4 @@
 ./AsmMips/.build
 **/target/
 ./Chip-8Emulator/
+./ZinclasActivities/

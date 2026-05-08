@@ -145,7 +145,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char* argv[]){
 		return SDL_APP_FAILURE;
 	}
 	
-	initArray(&data->waves, sizeof(Wave), 2);
+	initArray(&data->waves, sizeof(Function), 2);
 	// CreateWave(data, SIN, 50.0f, 0.02f);
 	// CreateWave(data, COS, 50.0f, 0.02f);
 

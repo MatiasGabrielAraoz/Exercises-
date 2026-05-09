@@ -1,0 +1,3 @@
+[submodule "GeoMati"]
+	path = GeoMati
+	url = https://github.com/tu-usuario/GeoMati.git

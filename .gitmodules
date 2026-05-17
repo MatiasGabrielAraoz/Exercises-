@@ -1,3 +1,6 @@
 [submodule "GeoMati"]
 	path = GeoMati
 	url = https://github.com/MatiasGabrielAraoz/GeoMati.git
+[submodule "lexerInC"]
+	path = lexerInC
+	url = https://github.com/MatiasGabrielAraoz/MathLexer

@@ -2,41 +2,10 @@ use crossterm::{
     ExecutableCommand, cursor::{MoveTo}, event::{self, Event, KeyCode}, terminal::{Clear, EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode, is_raw_mode_enabled}
 };
 
-use std::{mem::type_info::Str, process::Command, thread::sleep};
+use strip_ansi_escapes;
+use std::{process::Command, thread::sleep};
 use std::io::{stdout, Write};
 
-fn print_raw(text: &str) -> Result<(), Box<dyn std::error::Error>>{
-    if is_raw_mode_enabled()?{
-        disable_raw_mode()?;
-        println!("\r\n{}",text);
-        enable_raw_mode()?;
-    }
-    else {
-        println!("Salida: \r\n{}",text);
-    }
-    Ok(())
-
-}
-
-fn display_options(options: &[&str], selected: usize) -> Result<(), Box<dyn std::error::Error>>{
-    if !is_raw_mode_enabled()?{
-        enable_raw_mode()?;
-    }
-
-    print!("Iwdtui: \r\n");
-    for (idx, option) in options.iter().enumerate(){
-        if idx == selected{
-            print!("> {}\x1b[K\r\n", option);
-        }
-        else {
-            print!("  {}\x1b[K\r\n", option);
-        }
-    }
-    stdout().flush()?;
-
-
-    Ok(())
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if cfg!(target_os = "windows"){
@@ -47,8 +16,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     stdout().execute(EnterAlternateScreen)?;
 
     let options = ["scan", "get-networks", "connect"];
-    let interface = ;
-    let mut output: String = String::new();
+    let interfaces = get_interfaces()?;
+    let interface: String = prompt_interfaces(interfaces)?;
+
+    if interface.is_empty() {
+        disable_raw_mode()?;
+        panic!("NO TENÉS INTERFAZ")
+    }
+    let mut networks: Vec<String> = Vec::new();
 
     let mut selected: usize = 0;
 
@@ -57,7 +32,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         stdout().execute(Clear(crossterm::terminal::ClearType::All))?;
 
         display_options(&options, selected)?;
-        print_raw(&output)?;
+        for network in networks.clone() {
+            println!("{} \r\n", network);
+        }
 
 
         if let Event::Key(key_event) = event::read()? {
@@ -77,17 +54,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 KeyCode::Enter => {
                     stdout().execute(MoveTo(0, (options.len() + 1) as u16))?;
                     match selected {
-                        0 => {
-                            scan_networks(interface)?;
-                            sleep(std::time::Duration::from_millis(5));
+                        0 => { // scan
+                            scan_networks(&interface)?;
                         },
-                        1 => {
-                            output = get_networks(interface)?;
-                            print_raw(&output)?;
-                            sleep(std::time::Duration::from_millis(5000));
+                        1 => { // get-networks
+                            networks = get_networks(&interface)?;
                         }
-                        2 => {
-
+                        2 => { // Connect
+                            prompt_connect(networks.clone())?;
                         }
                         _ => {
 
@@ -107,18 +81,129 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn prompt_connect(networks_list: Vec<String>) -> Result<(), Box<dyn std::error::Error>>{
+    if networks_list.is_empty() {
+        return Err("".into());
+    }
+    let mut selected = 0;
+    loop {
+        stdout().execute(Clear(crossterm::terminal::ClearType::All))?;
+        let mut i = 0;
+        for network in &networks_list {
+            if selected == i{
+                println!("> {} \r\n", network);
+            }
+            else {
+                println!("{} \r\n", network);
+            }
+            i += 1;
+        }
+        stdout().flush()?;
+        
+
+        if let Event::Key(key_event) = event::read()? {
+            match key_event.code {
+                KeyCode::Char('q') => {
+                    break;
+                }
+                KeyCode::Down => {
+                    if selected+1 < networks_list.len() {
+                        selected += 1;
+                    }
+                }
+                KeyCode::Up => {
+                    if selected > 0 {
+                        selected -= 1;
+                    }
+                }
+                KeyCode::Enter => {
+
+                }
+                _ => {
+
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
 fn get_interfaces() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let mut get_interfaces_cmd = Command::new("iwctl");
+    let mut interfaces_list = Vec::new();
     get_interfaces_cmd.args(["station", "list"]);
     let result =  get_interfaces_cmd.output()?;
-    let text  = String::from_utf8_lossy(&result.stdout);
-    let interfaces = text
-        .lines()
-        .skip(4);
-    for line in interfaces {
-        let line_trimmed = line.trim();
+    let clean_bytes = strip_ansi_escapes::strip(&result.stdout);
+    let text  = String::from_utf8_lossy(&clean_bytes);
+
+    // println!("DEBUG RAW OUTPUT: {:?}", text);
+    for line in text.lines().skip(4) {
+        if line.contains("---") || line.contains("Devices") || line.contains("Name") {
+            continue;
+        }
+
+        let words: Vec<&str> = line
+            .split_whitespace()
+            .collect();
+
+        if let Some(name) = words.first() {
+            interfaces_list.push(name.to_string());
+        }
     }
-    Ok(interfaces)
+    Ok(interfaces_list)
+}
+
+fn prompt_interfaces(interfaces: Vec<String>) -> Result<String, Box<dyn std::error::Error>>{
+    let mut selected = 0;
+    if !is_raw_mode_enabled()?{
+        panic!();
+    }
+    loop {
+        stdout().execute(MoveTo(0, 0))?;
+        stdout().execute(Clear(crossterm::terminal::ClearType::All))?;
+        for (idx, option) in interfaces.iter().enumerate(){
+            if idx == selected{
+                print!("> {}\r\n", option);
+            }
+            else {
+                print!("  {}\r\n", option);
+            }
+        }
+
+        stdout().flush()?;
+
+        if let Event::Key(key_event) = event::read()? {
+            
+            match key_event.code{
+                KeyCode::Char('q') => {
+                    break;
+                }
+
+                KeyCode::Up => {
+                    if selected > 0{
+                        selected -= 1;
+                    }
+                }
+                KeyCode::Down => {
+                    if selected + 1 < interfaces.len() {
+                        selected += 1;
+                    }
+                }
+                KeyCode::Enter => {
+                    let interface = interfaces.get(selected).cloned().unwrap_or_default();
+                    return Ok(interface);
+                    
+                }
+                _ => {}
+            }
+
+        }
+
+    }
+
+
+    Ok(String::new())
 }
 
 fn scan_networks(interface: &str) -> Result<(), Box<dyn std::error::Error>>{
@@ -131,7 +216,7 @@ fn scan_networks(interface: &str) -> Result<(), Box<dyn std::error::Error>>{
     Ok(())
 }
 
-fn get_networks(interface: &str) -> Result<String, Box<dyn std::error::Error>>{
+fn get_networks(interface: &str) -> Result<Vec<String>, Box<dyn std::error::Error>>{
     let mut get_networks_cmd = Command::new("iwctl");
     get_networks_cmd.args(["station", &interface, "get-networks"]);
     
@@ -162,6 +247,25 @@ fn get_networks(interface: &str) -> Result<String, Box<dyn std::error::Error>>{
     }
 
 
-    Ok(networks_list.join("\r\n"))
+    Ok(networks_list)
 }
 
+
+fn display_options(options: &[&str], selected: usize) -> Result<(), Box<dyn std::error::Error>>{
+    if !is_raw_mode_enabled()?{
+        enable_raw_mode()?;
+    }
+
+    print!("Iwdtui: \r\n");
+    for (idx, option) in options.iter().enumerate(){
+        if idx == selected{
+            print!("> {}\x1b[K\r\n", option);
+        }
+        else {
+            print!("  {}\x1b[K\r\n", option);
+        }
+    }
+    stdout().flush()?;
+
+    Ok(())
+}

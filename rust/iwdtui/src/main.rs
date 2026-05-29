@@ -3,7 +3,7 @@ use crossterm::{
 };
 
 use strip_ansi_escapes;
-use std::{process::Command, thread::sleep};
+use std::process::{Command, Stdio};
 use std::io::{stdout, Write};
 
 
@@ -61,7 +61,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             networks = get_networks(&interface)?;
                         }
                         2 => { // Connect
-                            prompt_connect(networks.clone())?;
+                            prompt_connect(networks.clone(), &interface)?;
                         }
                         _ => {
 
@@ -81,23 +81,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn prompt_connect(networks_list: Vec<String>) -> Result<(), Box<dyn std::error::Error>>{
+fn prompt_connect(networks_list: Vec<String>, interface: &String) -> Result<(), Box<dyn std::error::Error>>{
     if networks_list.is_empty() {
         return Err("".into());
     }
     let mut selected = 0;
+
+    let (_, term_height) = crossterm::terminal::size()?;
+    let max_display = (term_height as usize).saturating_sub(2);
+
     loop {
         stdout().execute(Clear(crossterm::terminal::ClearType::All))?;
+        stdout().execute(MoveTo(0,0))?;
+
+        let start_index = if selected >= max_display {
+            selected - max_display + 1
+        } else {
+            0
+        };
+        let end_index = (start_index + max_display).min(networks_list.len());
+
         let mut i = 0;
         for network in &networks_list {
             if selected == i{
-                println!("> {} \r\n", network);
+                print!("> {}\x1b[K\r\n", network);
             }
             else {
-                println!("{} \r\n", network);
+                print!("  {}\x1b[K\r\n", network);
             }
             i += 1;
         }
+        print!("\r\n-- (q) Volver | Redes: {}/{} --", selected + 1, networks_list.len());
         stdout().flush()?;
         
 
@@ -117,7 +131,7 @@ fn prompt_connect(networks_list: Vec<String>) -> Result<(), Box<dyn std::error::
                     }
                 }
                 KeyCode::Enter => {
-
+                    connect_network(networks_list.get(selected).unwrap(), interface)?;
                 }
                 _ => {
 
@@ -127,6 +141,19 @@ fn prompt_connect(networks_list: Vec<String>) -> Result<(), Box<dyn std::error::
     }
 
     Ok(())
+}
+
+fn connect_network(network_name: &String, interface: &String) -> Result<(), Box<dyn std::error::Error>>{
+    let mut cmd = Command::new("iwctl");
+    cmd.args(["station", interface, "connect", network_name]);
+    cmd.stdin(Stdio::null());
+    let output = cmd.output()?;
+    if output.status.success() {
+        Ok(())
+    }
+    else {
+        Err("No se pudo conectar a la red".into())
+    }
 }
 
 fn get_interfaces() -> Result<Vec<String>, Box<dyn std::error::Error>> {

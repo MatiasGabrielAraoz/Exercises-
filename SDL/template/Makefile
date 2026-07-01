@@ -1,7 +1,7 @@
 CC = clang
 FLAGS = -Wall -Wextra -Wpedantic 
-LIBS = -lSDL3 -lm -lSDL3_gfx
-SRC = src/*.c
+LIBS = -lSDL3
+SRC = main.c
 OUT = main
 
 all: $(OUT)

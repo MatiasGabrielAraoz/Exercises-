@@ -25,7 +25,6 @@
 
 
 
-		//TODO: call function to convert to uppercase every character
 		lea rdi, [rip + input_buffer]
 		call convert_to_upper
 		mov [input_uppercase], rax

@@ -16,6 +16,7 @@ int main(int argc, char** argv){
 
 	fseek(file, 0, SEEK_END);
 	
+	
 	int length = ftell(file);
 	if (length == -1){
 		fprintf(stderr, "Error con el largo del archivo");

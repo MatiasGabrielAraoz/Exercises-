@@ -61,9 +61,25 @@ int main(int argc, char** argv){
 	// el ancho en bytes se calcula como ((ancho * bpp + 31)/ 32)*4 
 	int bytewidth = ((imgWidth * bpp + 31) / 32) * 4;
 
-	unsigned char buffer[imgWidth];
-	for (int i = 0; i < imgWidth; i++){
+	for (int j = 0; j < imgHeight; j++){
+		for (int i = 0; i < imgWidth; i++){
+			unsigned char b;
+			fread(&b, sizeof(char), 1, Finput);
+			unsigned char g;
+			fread(&g, sizeof(char), 1, Finput);
+			unsigned char r;
+			fread(&r, sizeof(char), 1, Finput);
 
+			unsigned char buffer[3];
+			unsigned char avg = (b * 0.2126 + g * 0.7152 + r * 0.0722) / 3;
+			buffer[0] = buffer[1] = buffer[2] = avg;
+			fwrite(&buffer, sizeof(char), 3, Foutput);
+			if (bpp == 32){
+				unsigned char a;
+				fread(&a, sizeof(char), 1, Finput);
+				fwrite(&a, sizeof(char), 1, Foutput);
+			}
+		}
 	}
 
 	fclose(Finput);

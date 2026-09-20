@@ -1,6 +1,27 @@
 ./AsmMips/.config
 ./AsmMips/.build
 **/target/
-./Chip-8Emulator/
-./ZinclasActivities/
-./GeoMati/
+**/Chip-8Emulator/
+**/ZinclasActivities/
+**/GeoMati/
+
+# CMake
+**/build/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+
+# vcpkg
+**/vcpkg_installed/
+
+# IDE
+.idea/
+
+# Compiled artifacts
+*.o
+*.a
+*.so
+
+# Profiling
+**/perf.data
+**/perf.data.old

@@ -1,5 +1,5 @@
-./AsmMips/.config
-./AsmMips/.build
+**/AsmMips/.config
+**/AsmMips/.build
 **/target/
 **/Chip-8Emulator/
 **/ZinclasActivities/
@@ -15,7 +15,7 @@
 **/vcpkg_installed/
 
 # IDE
-.idea/
+**/.idea/
 
 # Compiled artifacts
 *.o
